@@ -21,6 +21,11 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // 'About Me' for doctor - optional
+    bio: {
+      type: String,
+      required: false,
+    },
     // Password field included but commented out due to uncertainty regarding registration
     // password: {
     //   type: String,
