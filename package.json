@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
+  },
+  "name": "t3a2-server",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Putting-The-A-Team-in-CA/T3A2-Server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Putting-The-A-Team-in-CA/T3A2-Server/issues"
+  },
+  "homepage": "https://github.com/Putting-The-A-Team-in-CA/T3A2-Server#readme",
+  "description": ""
+}
