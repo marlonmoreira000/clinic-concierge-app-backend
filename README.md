@@ -1,3 +1,7 @@
+## Note
+
+This README is a copy of the README document in the ['Client' repository](https://github.com/Putting-The-A-Team-in-CA/T3A2-Client) for this project. As such, the supporting files (images, etc) are not present for this document. Check the original README here: https://github.com/Putting-The-A-Team-in-CA/T3A2-Client
+
 # Medical Clinic Booking App
 
 ## General Description and Purpose
