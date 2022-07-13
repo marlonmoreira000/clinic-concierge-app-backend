@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin", "doctor"],
     default: ["user"],
   },
+  profile_id: { type: mongoose.Schema.Types.ObjectId, ref: "patient/doctor" },
 });
 
 const userModel = mongoose.model("Users", userSchema);
