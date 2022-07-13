@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-import Joi from "joi";
-import passwordComplexity from "joi-password-complexity";
+import { registrationBodyValidation } from "../utils/validationSchema";
 
 // Registration
 router.post("/register", async (req, res) => {
@@ -38,14 +36,5 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: true, message: "Internal Server Error" });
   }
 });
-
-// Validate body of registration request - called above
-const registrationBodyValidation = (body) => {
-  const schema = Joi.object({
-    email: Joi.string().email().required().label("Email"),
-    password: passwordComplexity().password().required().label("Password"),
-  });
-  return schema.validate(body);
-};
 
 module.exports = router;
