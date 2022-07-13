@@ -44,9 +44,9 @@ const patientSchema = new mongoose.Schema(
     //   required: true,
     // },
     // },
-    appointments: {
-      type: Array,
-    },
+    appointments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Appointment", required: false }
+    ],
   },
 
   {
