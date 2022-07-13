@@ -2,16 +2,20 @@ const mongoose = require("mongoose");
 
 const patientSchema = new mongoose.Schema(
   {
-    name: {
+    givenName: {
       type: String,
       required: true,
     },
-    // Gender not required to allow non-disclosure
+    familyName: {
+      type: String,
+      required: true,
+    },
+    // Gender not required to allow registration to work
     gender: {
       type: String,
       required: false,
     },
-    // Age not required to allow non-disclosure
+    // Age not required to allow registration to work
     age: {
       type: Number,
       required: false,
@@ -20,17 +24,18 @@ const patientSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // Password field included but commented out due to uncertainty regarding registration
-    // password: {
-    //   type: String,
-    //   required: true,
-    // },
+    // NOT REQUIRED ONLY FOR INITIAL TESTING/DEVELOPMENT
+    // SET TO REQUIRED: TRUE FOR PRODUCTION!
+    auth0Id: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const patientModel = mongoose.model("patients", patientSchema);
+const patientModel = mongoose.model("Patients", patientSchema);
 
 module.exports = patientModel;

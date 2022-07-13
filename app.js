@@ -1,6 +1,12 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const port = process.env.PORT || 3000;
+require('dotenv').config()
+const dbConfig = require("./config/dbConfig");
+app.use(express.json());
+const patientRoute = require("./routes/patientRoute");
+const port = process.env.PORT || 4000;
+
+app.use("/api/v1/patient", patientRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
