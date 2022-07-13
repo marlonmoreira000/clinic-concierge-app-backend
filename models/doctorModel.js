@@ -2,7 +2,11 @@ const mongoose = require("./connection");
 
 const doctorSchema = new mongoose.Schema(
   {
-    name: {
+    first_name: {
+      type: String,
+      required: true,
+    },
+    last_name: {
       type: String,
       required: true,
     },
@@ -32,10 +36,9 @@ const doctorSchema = new mongoose.Schema(
     //   required: true,
     // },
   },
-    {
-      timestamps: true,
-    }
-
+  {
+    timestamps: true,
+  }
 );
 
 const doctorModel = mongoose.model("doctors", doctorSchema);

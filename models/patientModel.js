@@ -2,14 +2,30 @@ const mongoose = require("mongoose");
 
 const patientSchema = new mongoose.Schema(
   {
-    name: {
+    first_name: {
       type: String,
       required: true,
+    },
+    last_name: {
+      type: String,
+      required: true,
+    },
+    contact_number: {
+      type: Number,
+      required: true
+    },
+    address: {
+      street_number: { type: Number, required: true },
+      street_name: { type: String, required: true },
+      suburb: { type: String, required: true },
+      state: { type: String, enum: ["Victoria", "Queensland", "South Australia", "Western Australia", "Perth", "New South Wales", "Tasmania"], required: true },
+      postcode:{type: Number, required: true}
+
     },
     // Gender not required to allow non-disclosure
     gender: {
       type: String,
-      enum: ["male", "female", "other", "do not prefer to say"],
+      enum: ["male", "female", "other", "prefer not to say"],
       default: "male",
       required: false,
     },
@@ -29,15 +45,13 @@ const patientSchema = new mongoose.Schema(
     // },
     // },
     appointments: {
-      type: Array
-    
-    }
+      type: Array,
+    },
   },
-  
+
   {
     timestamps: true,
   }
-
 );
 
 const patientModel = mongoose.model("patients", patientSchema);
