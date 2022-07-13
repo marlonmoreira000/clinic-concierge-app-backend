@@ -1,11 +1,11 @@
-import Joi from "joi";
-import passwordComplexity from "joi-password-complexity";
+const Joi = require("joi");
+const passwordComplexity = require("joi-password-complexity");
 
 // Validate body of registration request - authRoute
 const registrationBodyValidation = (body) => {
   const schema = Joi.object({
     email: Joi.string().email().required().label("Email"),
-    password: passwordComplexity().password().required().label("Password"),
+    password: passwordComplexity().required().label("Password"),
   });
   return schema.validate(body);
 };
@@ -19,4 +19,4 @@ const loginBodyValidation = (body) => {
   return schema.validate(body);
 };
 
-export { registrationBodyValidation, loginBodyValidation };
+module.exports = { registrationBodyValidation, loginBodyValidation };

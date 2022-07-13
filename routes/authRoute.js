@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/userModel");
-const bcrypt = require("bcryptjs");
-import {
+const bcrypt = require("bcrypt");
+const {
   registrationBodyValidation,
   loginBodyValidation,
-} from "../utils/validationSchema";
+} = require("../utils/validationSchema");
+const generateToken = require("../utils/generateTokens");
 
 // Registration
 router.post("/register", async (req, res) => {
@@ -65,8 +66,15 @@ router.post("/login", async (req, res) => {
     if (!verifiedPassword) {
       return res.status(401).json({ error: true, message: "Invalid password" });
     }
-      
+
     // Generate access and refresh token if email + password correct
+    const { accessToken, refreshToken } = await generateToken(user);
+    res.status(200).json({
+      error: false,
+      accessToken,
+      refreshToken,
+      message: "Login successful",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: true, message: "Internal Server Error" });

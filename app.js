@@ -3,10 +3,11 @@ const app = express();
 require('dotenv').config()
 const dbConfig = require("./config/dbConfig");
 app.use(express.json());
-const patientRoute = require("./routes/patientRoute");
+const authRoute = require("./routes/authRoute");
 const port = process.env.PORT || 4000;
 
-app.use("/api/v1/patient", patientRoute);
+
+app.use("/api/v1/", authRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
