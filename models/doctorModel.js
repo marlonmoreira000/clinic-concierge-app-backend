@@ -13,6 +13,8 @@ const doctorSchema = new mongoose.Schema(
     // Gender required as this is relevant information for comfort of some patients when choosing a practitioner
     gender: {
       type: String,
+      enum: ["male", "female", "other", "prefer not to say"],
+      default: "male",
       required: true,
     },
     // Experience = years of practicing medicine
@@ -21,7 +23,7 @@ const doctorSchema = new mongoose.Schema(
       required: true,
     },
     // Specialisation/area of expertise
-    specialty: {
+    speciality: {
       type: String,
       required: true,
     },
@@ -30,11 +32,10 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    // Password field included but commented out due to uncertainty regarding registration
-    // password: {
-    //   type: String,
-    //   required: true,
-    // },
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"user"
+    }
   },
   {
     timestamps: true,
