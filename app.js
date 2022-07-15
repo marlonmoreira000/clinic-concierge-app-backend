@@ -4,6 +4,9 @@ require('dotenv').config()
 const dbConfig = require("./config/dbConfig");
 const cors = require('cors'); 
 app.use(express.json());
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
 const authRoute = require("./routes/authRoute");
 const refreshTokenRoute = require("./routes/refreshTokenRoute");
 const apiV1Routes =require("./routes")

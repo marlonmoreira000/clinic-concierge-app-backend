@@ -34,21 +34,15 @@ const patientSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
-    email: {
-      type: String,
-      required: true,
-    },
-    // Password field included but commented out due to uncertainty regarding registration
-    // password: {
-    //   type: String,
-    //   required: true,
-    // },
-    // },
+
     appointments: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Appointment", required: false }
     ],
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"user"
+    }
   },
-
   {
     timestamps: true,
   }

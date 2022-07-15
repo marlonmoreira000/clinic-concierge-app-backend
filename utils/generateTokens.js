@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Token = require("../models/tokenModel");
+const dotenv = require('dotenv');
+dotenv.config()
 
 // Creates token with user id and role
 const generateToken = async (user) => {
