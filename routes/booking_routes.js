@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { log } = require("console");
 const auth = require("../middleware/auth.js");
+const { roleCheck } = require("../middleware/roleCheck.js");
 const BookingModel = require("../models/bookingModel");
 const AppointmentModel = require("../models/appointmentModel");
 const PatientModel = require("../models/patientModel");
@@ -23,7 +24,7 @@ router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", auth, async (req, res) => {
+router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
   // Validate appointment request
   const { error } = createBookingRequestValidation(req.body);
   if (error) {
