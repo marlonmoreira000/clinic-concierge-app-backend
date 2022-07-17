@@ -17,7 +17,22 @@ const {
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
 router.get("/", auth, (req, res) => {
-  findAll(BookingModel, {}, res);
+  log("query parameters: %O", req.query);
+  const query = {};
+  const patientId = req.query.patientId;
+  if (patientId) {
+    query["patient_id"] = patientId;
+  }
+  const attended = req.query.attended;
+  if (attended || attended === false) {
+    query["attended"] = attended;
+  }
+  const feePaid = req.query.feePaid;
+  if (feePaid || feePaid === false) {
+    query["fee_paid"] = feePaid;
+  }
+  log("query: %O", query);
+  findAll(BookingModel, query, res);
 });
 
 router.get("/:id", auth, (req, res) => {

@@ -17,7 +17,30 @@ const {
 } = require("../utils/validationSchema");
 
 router.get("/", auth, (req, res) => {
-  findAll(AppointmentModel, {}, res);
+  log("query parameters: %O", req.query);
+  const query = {};
+  const fromTime = req.query.fromTime;
+  if (fromTime) {
+    query["appointment_slot.start_time"] = {
+      $gte: req.query.fromTime,
+    };
+  }
+  const toTime = req.query.toTime;
+  if (toTime) {
+    query["appointment_slot.end_time"] = {
+      $lt: new Date(req.query.toTime),
+    };
+  }
+  const booked = req.query.booked;
+  if (booked || booked === false) {
+    query["booked"] = booked;
+  }
+  const doctorId = req.query.doctorId;
+  if (doctorId) {
+    query["doctor_id"] = doctorId;
+  }
+  log("query: %O", query);
+  findAll(AppointmentModel, query, res);
 });
 
 router.get("/:id", auth, (req, res) => {
