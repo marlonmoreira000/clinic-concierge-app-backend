@@ -6,21 +6,14 @@ const { roleCheck, doctorCheck } = require("../middleware/roleCheck.js");
 const { log } = require("console");
 const DoctorModel = require("../models/doctorModel");
 const { StatusCodes } = require("http-status-codes");
+const { findAll, findById } = require("../utils/dbUtils");
 
-router.get("/", auth, async (req, res) => {
-  res.status(StatusCodes.OK).send(await AppointmentModel.find());
+router.get("/", auth, (req, res) => {
+  findAll(AppointmentModel, {}, res);
 });
 
 router.get("/:id", auth, (req, res) => {
-  AppointmentModel.findById(req.params.id, (err, patient) => {
-    if (err) {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .send({ error: `Could not find Appointment: ${req.params.id}` });
-    } else {
-      res.status(StatusCodes.OK).send(patient);
-    }
-  });
+  findById(AppointmentModel, req.params.id, res);
 });
 
 // router.post("/",auth, (req, res) => {

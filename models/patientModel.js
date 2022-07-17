@@ -19,7 +19,7 @@ const patientSchema = new mongoose.Schema(
       street_name: { type: String, required: true },
       suburb: { type: String, required: true },
       state: { type: String, enum: ["Victoria", "Queensland", "South Australia", "Western Australia", "Perth", "New South Wales", "Tasmania"], required: true },
-      postcode:{type: Number, required: true}
+      postcode: {type: Number, required: true}
 
     },
     // Gender not required to allow non-disclosure
@@ -48,6 +48,6 @@ const patientSchema = new mongoose.Schema(
   }
 );
 
-const patientModel = mongoose.model("patients", patientSchema);
+const patientModel = mongoose.model("Patient", patientSchema);
 
 module.exports = patientModel;

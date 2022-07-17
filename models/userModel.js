@@ -16,11 +16,12 @@ const userSchema = new mongoose.Schema({
     default: ["user"],
   },
   profile_id: {
-    type: mongoose.Schema.Types.ObjectId, ref: "patient/doctor",
-    required: false
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "patient/doctor",
+    required: false,
   },
 });
 
-const userModel = mongoose.model("Users", userSchema);
+const userModel = mongoose.model("User", userSchema);
 
 module.exports = userModel;
