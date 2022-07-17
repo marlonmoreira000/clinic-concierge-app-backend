@@ -3,7 +3,7 @@ const router = express.Router();
 const PatientModel = require("../models/patientModel");
 const auth = require("../middleware/auth.js");
 const { log } = require("console");
-
+const { StatusCodes } = require("http-status-codes");
 
 router.get("/", auth, async (req, res) => {
   res.send(await PatientModel.find());
@@ -12,9 +12,11 @@ router.get("/", auth, async (req, res) => {
 router.get("/:id",auth, (req, res) => {
   PatientModel.findById(req.params.id, (err, doc) => {
     if (err) {
-      res.status(404).send({ error: `Could not find Patient: ${req.params.id}` });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send({ error: `Could not find Patient: ${req.params.id}` });
     } else {
-      res.status(200).send(doc);
+      res.status(StatusCodes.OK).send(doc);
     }
   });
 });
@@ -27,7 +29,9 @@ router.post("/", auth, async(req, res) => {
       log("patient: " + patient[0]);
       if (patient[0]) {
         log("patient already exists, cannot recreate patient");
-        res.status(400).send({ error: "Patient profile already exists for user." });
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .send({ error: "Patient profile already exists for user." });
       } else {
         log("creating patient");
         PatientModel.create({
@@ -39,8 +43,8 @@ router.post("/", auth, async(req, res) => {
           gender: req.body.gender,
           age: req.body.age,
         }).then(newPatient => {
-          log("Created new patient");
-          res.status(200).send(newPatient);
+          log("created new patient");
+          res.status(StatusCodes.OK).send(newPatient);
         });
       }
     });  

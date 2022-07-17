@@ -7,6 +7,7 @@ const {
   loginBodyValidation,
 } = require("../utils/validationSchema");
 const generateToken = require("../utils/generateTokens");
+const { StatusCodes } = require("http-status-codes");
 
 // Registration
 router.post("/register", async (req, res) => {
@@ -14,16 +15,20 @@ router.post("/register", async (req, res) => {
     // Validate registration request
     const { error } = registrationBodyValidation(req.body);
     if (error) {
-      return res.status(400).json({ error: true, message: error.message });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: true, message: error.message });
     }
 
     // Check if user already exists for this email address
     const user = await User.findOne({ email: req.body.email });
     if (user) {
-      return res.status(400).json({
-        error: true,
-        message: "Account already exists for this email",
-      });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({
+          error: true,
+          message: "Account already exists for this email",
+        });
     }
 
     // Encrypt, salt and hash password - IMPORTANT
@@ -33,11 +38,13 @@ router.post("/register", async (req, res) => {
     // Save User to DB, replacing supplied password with hashed+salted password
     await new User({ ...req.body, password: hashedPassword }).save();
     res
-      .status(201)
+      .status(StatusCodes.CREATED)
       .json({ error: false, message: "Account created successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: true, message: "Internal Server Error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: true, message: "Internal Server Error" });
   }
 });
 
@@ -47,14 +54,16 @@ router.post("/login", async (req, res) => {
     // Validate login request
     const { error } = loginBodyValidation(req.body);
     if (error) {
-      return res.status(400).json({ error: true, message: error.message });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: true, message: error.message });
     }
 
     // Check that user exists for this email address
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ error: true, message: "User does not exist" });
     }
 
@@ -64,20 +73,26 @@ router.post("/login", async (req, res) => {
       user.password
     );
     if (!verifiedPassword) {
-      return res.status(401).json({ error: true, message: "Invalid password" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ error: true, message: "Invalid password" });
     }
 
     // Generate access and refresh token if email + password correct
     const { accessToken, refreshToken } = await generateToken(user);
-    res.status(200).json({
-      error: false,
-      accessToken,
-      refreshToken,
-      message: "Login successful",
-    });
+    res
+      .status(StatusCodes.OK)
+      .json({
+        error: false,
+        accessToken,
+        refreshToken,
+        message: "Login successful",
+      });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: true, message: "Internal Server Error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: true, message: "Internal Server Error" });
   }
 });
 

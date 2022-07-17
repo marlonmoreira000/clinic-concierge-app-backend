@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { log } = require("console");
+const { StatusCodes} = require("http-status-codes");
 dotenv.config()
 
 const auth = async (req, res, next) => {
@@ -11,19 +12,18 @@ const auth = async (req, res, next) => {
     log("Auth token: " + token);
 
     jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err, user) => {
-      log("err: " + err);
-
       if (err) {
         return res
-          .status(403)
-          .send({ error: true, message: "Access denied: Invalid token." });
+          .status(StatusCodes.FORBIDDEN)
+          .send({ error: true, message: "Access denied: Invalid or expired token." });
       }
-
       req.user = user;
       next();
     });
   } else {
-    res.status(401).send({error: true, message: "Access denied: No token provided."});
+    res
+      .status(StatusCodes.UNAUTHORIZED)
+      .send({ error: true, message: "Access denied: No token provided." });
   }
 };
 

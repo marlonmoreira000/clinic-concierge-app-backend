@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const BookingModel = require("../models/bookingModel");
+const AppointmentModel = require("../models/appointmentModel");
 
 router.get("/", async (req, res) => {
   res.send(await BookingModel.find());
@@ -17,10 +18,12 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  BookingModel.create(req.body, (err, doc) => {
+  
+  BookingModel.create({patient_id: req.user._id}, req.body, (err, doc) => {
     if (err) {
       res.status(422).send({ error: err.message });
     } else {
+
       res.status(200).send(doc);
     }
   });
