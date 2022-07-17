@@ -49,7 +49,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  findByIdAndDelete(DoctorModel, req.params.id, res);
+  findByIdAndDelete(PatientModel, req.params.id, res);
 });
 
 module.exports = router;

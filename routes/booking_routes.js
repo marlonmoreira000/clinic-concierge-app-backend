@@ -4,7 +4,16 @@ const { log } = require("console");
 const auth = require("../middleware/auth.js");
 const BookingModel = require("../models/bookingModel");
 const AppointmentModel = require("../models/appointmentModel");
-const { findAll, findById } = require("../utils/dbUtils");
+const PatientModel = require("../models/patientModel");
+const { StatusCodes } = require("http-status-codes");
+const {
+  findAll,
+  findById,
+  create,
+  findByIdAndUpdate,
+  findByIdAndDelete,
+} = require("../utils/dbUtils");
+const { createBookingRequestValidation } = require("../utils/validationSchema");
 
 router.get("/", auth, (req, res) => {
   findAll(BookingModel, {}, res);
@@ -14,26 +23,54 @@ router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", (req, res) => {
-  BookingModel.create({ patient_id: req.user._id }, req.body, (err, doc) => {
-    if (err) {
-      res.status(422).send({ error: err.message });
-    } else {
-      res.status(200).send(doc);
-    }
+router.post("/", auth, async (req, res) => {
+  // Validate appointment request
+  const { error } = createBookingRequestValidation(req.body);
+  if (error) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: true, message: error.message });
+  }
+  const appointment = await AppointmentModel.findOne({
+    _id: req.body.appointment_id,
   });
+  if (!appointment) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: true,
+      message: "Failed to create booking as invalid appointment id provided",
+    });
+  }
+  const patient = await PatientModel.findOne({
+    user_id: req.user._id,
+  });
+  if (!patient) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: true,
+      message: "Failed to create booking as invalid patient id provided",
+    });
+  }
+
+  const query = {
+    appointment_id: appointment,
+    patient_id: patient,
+  };
+  const booking = {
+    appointment_id: appointment,
+    patient_id: patient,
+    attended: req.body.attended,
+    fee_paid: req.body.fee_paid,
+    reason_for_visit: req.body.reason_for_visit,
+  };
+  log("booking: %O", booking);
+  create(BookingModel, query, booking, res);
 });
 
 router.put("/:id", async (req, res) => {
-  res.send(
-    await BookingModel.findByIdAndUpdate(req.params.id, req.body, {
-      returnDocument: "after",
-    })
-  );
+  findByIdAndUpdate(BookingModel, req.params.id, req.body, res);
 });
 
 router.delete("/:id", async (req, res) => {
-  BookingModel.findByIdAndDelete(req.params.id, () => res.sendStatus(204));
+  findByIdAndDelete(BookingModel, req.params.id, res);
 });
 
 module.exports = router;

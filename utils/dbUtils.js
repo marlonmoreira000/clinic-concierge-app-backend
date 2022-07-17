@@ -9,11 +9,11 @@ const findAll = (dbModel, query, res) => {
       log(`Failed to get ${dbModel.modelName}s: ${err}`);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ error: `Failed to get ${dbModel.modelName}s` });
+        .json({ error: `Failed to get ${dbModel.modelName}s` });
     }
 
     log(`Got ${dbModel.modelName}s: ${docs}`);
-    res.status(StatusCodes.OK).send(docs);
+    res.status(StatusCodes.OK).json(docs);
   });
 };
 
@@ -22,13 +22,13 @@ const findById = (dbModel, id, res) => {
   dbModel.findById(id, (err, doc) => {
     if (err) {
       log(`${dbModel.modelName} with ${id} does not exist`);
-      return res.status(StatusCodes.NOT_FOUND).send({
+      return res.status(StatusCodes.NOT_FOUND).json({
         error: `Could not find ${dbModel.modelName} with id: ${id}`,
       });
     }
 
     log(`Got ${dbModel.modelName}: ${doc}`);
-    res.status(StatusCodes.OK).send(doc);
+    res.status(StatusCodes.OK).json(doc);
   });
 };
 
@@ -39,7 +39,7 @@ const create = (dbModel, query, model, res, role, user) => {
     .then((existingDoc) => {
       if (existingDoc) {
         log(`${dbModel.modelName} already exist, cannot recreate it`);
-        return res.status(StatusCodes.BAD_REQUEST).send({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           error: `${dbModel.modelName} already exist, cannot recreate it`,
         });
       }
@@ -57,7 +57,7 @@ const create = (dbModel, query, model, res, role, user) => {
           // Add role to User Model
           log("user: %O", user);
           UserModel.findById(user._id).then(async (usr) => {
-            log(`usr: ${usr}`);
+            log(`Adding ${role} to usr: ${usr}`);
             await usr.updateOne(
               { roles: [...usr.roles, role] },
               { returnDocument: "after" }
@@ -68,14 +68,14 @@ const create = (dbModel, query, model, res, role, user) => {
         })
         .catch((error) => {
           log(`Failed to create ${dbModel.modelName}: ${error}`);
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             error: `Failed to create ${dbModel.modelName}`,
           });
         });
     })
     .catch((error) => {
       log(`Failed to create ${dbModel.modelName}: ${error}`);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: `Failed to create ${dbModel.modelName}`,
       });
     });
@@ -86,7 +86,7 @@ const findByIdAndUpdate = (dbModel, id, update, res) => {
   dbModel.findByIdAndUpdate(id, update, (err, doc) => {
     if (err) {
       log(`Failed to update ${dbModel.modelName} with id ${id}: ${err}`);
-      return res.status(StatusCode.INTERNAL_SERVER_ERROR).send({
+      return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
         error: `Failed to update ${dbModel.modelName} with id: ${id}`,
       });
     }
@@ -101,7 +101,7 @@ const findByIdAndDelete = (dbModel, id, res) => {
   dbModel.findByIdAndDelete(id, (err, doc) => {
     if (err) {
       log(`Failed to delete ${dbModel.modelName} with id: ${id}: ${err}`);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: `Failed to delete ${dbModel.modelName} with id: ${id}`,
       });
     }

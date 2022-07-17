@@ -78,10 +78,32 @@ const createPatientBodyValidation = (body) => {
   return schema.validate(body);
 };
 
+// Validate create appointment request
+const createAppointmentRequestValidation = (body) => {
+  const schema = Joi.object({
+    start_time: Joi.string().required().label("start_time"),
+    end_time: Joi.string().required().label("end_time"),
+  });
+  return schema.validate(body);
+};
+
+// Validate create booking request
+const createBookingRequestValidation = (body) => {
+  const schema = Joi.object({
+    appointment_id: Joi.string().required().label("appointment_id"),
+    attended: Joi.boolean().optional().label("attended"),
+    fee_paid: Joi.boolean().optional().label("fee_paid"),
+    reason_for_visit: Joi.string().optional().label("reason_for_visit"),
+  });
+  return schema.validate(body);
+};
+
 module.exports = {
   registrationBodyValidation,
   loginBodyValidation,
   refreshTokenBodyValidation,
   createDoctorBodyValidation,
   createPatientBodyValidation,
+  createAppointmentRequestValidation,
+  createBookingRequestValidation,
 };
