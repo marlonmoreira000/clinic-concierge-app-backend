@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 const authRoute = require("./routes/authRoute");
 const refreshTokenRoute = require("./routes/refreshTokenRoute");
-const apiV1Routes =require("./routes")
+const apiV1Routes =require("./routes/index.js")
 const port = process.env.PORT || 4000;
 
 app.use(cors());
