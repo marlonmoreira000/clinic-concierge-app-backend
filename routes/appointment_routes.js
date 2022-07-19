@@ -16,7 +16,7 @@ const {
   createAppointmentRequestValidation,
 } = require("../utils/validationSchema");
 
-router.get("/", auth, (req, res) => {
+router.get("/", (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const fromTime = req.query.fromTime;
@@ -43,7 +43,7 @@ router.get("/", auth, (req, res) => {
   findAll(AppointmentModel, query, res);
 });
 
-router.get("/:id", auth, (req, res) => {
+router.get("/:id", (req, res) => {
   findById(AppointmentModel, req.params.id, res);
 });
 
