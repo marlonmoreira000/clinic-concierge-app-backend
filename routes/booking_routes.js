@@ -16,7 +16,7 @@ const {
 } = require("../utils/dbUtils");
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
-router.get("/", auth, (req, res) => {
+router.get("/", (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const patientId = req.query.patientId;
@@ -35,7 +35,7 @@ router.get("/", auth, (req, res) => {
   findAll(BookingModel, query, res);
 });
 
-router.get("/:id", auth, (req, res) => {
+router.get("/:id", (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
