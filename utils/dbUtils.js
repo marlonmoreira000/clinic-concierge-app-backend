@@ -20,7 +20,7 @@ const findAll = (dbModel, query, res) => {
 const findById = (dbModel, id, res) => {
   log(`Getting ${dbModel.modelName} with id`);
   dbModel.findById(id, (err, doc) => {
-    if (err) {
+    if (err || !doc) {
       log(`${dbModel.modelName} with ${id} does not exist`);
       return res.status(StatusCodes.NOT_FOUND).json({
         error: `Could not find ${dbModel.modelName} with id: ${id}`,
