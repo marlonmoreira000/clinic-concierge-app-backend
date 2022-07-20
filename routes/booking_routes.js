@@ -78,7 +78,46 @@ router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
     reason_for_visit: req.body.reason_for_visit,
   };
   log("booking: %O", booking);
-  create(BookingModel, query, booking, res);
+
+  log(`Creating Booking`);
+  BookingModel.findOne(query)
+    .then((existingDoc) => {
+      if (existingDoc) {
+        log(`Booking already exist, cannot recreate it`);
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          error: `Booking already exist, cannot recreate it`,
+        });
+      }
+
+      BookingModel.create(booking)
+        .then(async (doc) => {
+          log(`Booking created successfully`);
+
+          const apppointmentUpdate = {
+            booked: true,
+            booked_by: patient,
+          };
+
+          const appointmentId = appointment.id;
+          log(`Updating appointment with id: ${appointmentId}`);
+          AppointmentModel.findByIdAndUpdate(appointmentId, apppointmentUpdate).then((appt) => {
+            log(`Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`);
+          });
+          return res.status(StatusCodes.CREATED).json(doc);
+        })
+        .catch((error) => {
+          log(`Failed to create Booking: ${error}`);
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: `Failed to create Booking`,
+          });
+        });
+    })
+    .catch((error) => {
+      log(`Failed to create Booking: ${error}`);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        error: `Failed to create Booking`,
+      });
+    });
 });
 
 router.put("/:id", async (req, res) => {

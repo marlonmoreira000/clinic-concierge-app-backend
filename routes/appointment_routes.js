@@ -68,7 +68,7 @@ router.post("/", auth, roleCheck(["doctor"]), async (req, res) => {
       .json({ error: "Appointment end date is in past" });
   }
   if (end_time <= start_time) {
-    return res.status(StatusCodes.BAD_REQUEST).send({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       error:
         "Appointment start time should be earlier than end time and start and end time cannot be equal.",
     });
@@ -77,6 +77,15 @@ router.post("/", auth, roleCheck(["doctor"]), async (req, res) => {
   //TODO: check appointment end_time not after other appointment start_time
 
   const doctor = await DoctorModel.findOne({ user_id: req.user._id });
+  if (!doctor) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({
+        error: true,
+        message:
+          "Cannot create appointment as failed to find doctor associated with this request.",
+      });
+  }
   const appointment = {
     doctor_id: doctor._id,
     appointment_slot: {
