@@ -39,7 +39,7 @@ router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
+router.post("/", async (req, res) => {
   // Validate appointment request
   const { error } = createBookingRequestValidation(req.body);
   if (error) {
@@ -56,9 +56,12 @@ router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
       message: "Failed to create booking as invalid appointment id provided",
     });
   }
-  const patient = await PatientModel.findOne({
-    user_id: req.user._id,
-  });
+
+  const patientQuery = req.body.patient_id
+    ? { _id: req.body.patient_id }
+    : { user_id: req.user._id };
+
+  const patient = await PatientModel.findOne(patientQuery);
   if (!patient) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: true,
@@ -100,8 +103,13 @@ router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
 
           const appointmentId = appointment.id;
           log(`Updating appointment with id: ${appointmentId}`);
-          AppointmentModel.findByIdAndUpdate(appointmentId, apppointmentUpdate).then((appt) => {
-            log(`Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`);
+          AppointmentModel.findByIdAndUpdate(
+            appointmentId,
+            apppointmentUpdate
+          ).then((appt) => {
+            log(
+              `Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`
+            );
           });
           return res.status(StatusCodes.CREATED).json(doc);
         })

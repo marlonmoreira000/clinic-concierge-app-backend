@@ -91,6 +91,7 @@ const createAppointmentRequestValidation = (body) => {
 const createBookingRequestValidation = (body) => {
   const schema = Joi.object({
     appointment_id: Joi.string().required().label("appointment_id"),
+    patient_id: Joi.string().optional().label("patient_id"),
     attended: Joi.boolean().optional().label("attended"),
     fee_paid: Joi.boolean().optional().label("fee_paid"),
     reason_for_visit: Joi.string().optional().label("reason_for_visit"),
