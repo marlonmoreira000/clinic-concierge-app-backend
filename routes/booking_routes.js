@@ -103,8 +103,8 @@ router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
           log(
             `Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`
           );
+          return res.status(StatusCodes.CREATED).json(doc);
         });
-        return res.status(StatusCodes.CREATED).json(doc);
       });
     })
     .catch((error) => {
