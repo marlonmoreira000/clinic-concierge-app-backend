@@ -16,11 +16,6 @@ const apiV1Routes = require("./routes/index.js");
 
 app.use("/api/v1/", authRoute);
 app.use("/api/v1/refreshToken", refreshTokenRoute);
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
 app.use("/api/v1", apiV1Routes);
 
 module.exports = app;

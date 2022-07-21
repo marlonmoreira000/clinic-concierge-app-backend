@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const AppointmentModel = require("../models/appointmentModel");
+const { log } = require("console");
 const auth = require("../middleware/auth.js");
 const { roleCheck } = require("../middleware/roleCheck.js");
-const { log } = require("console");
+const AppointmentModel = require("../models/appointmentModel");
 const DoctorModel = require("../models/doctorModel");
 const { StatusCodes } = require("http-status-codes");
 const {
@@ -47,7 +47,7 @@ router.get("/:id", auth, (req, res) => {
   findById(AppointmentModel, req.params.id, res);
 });
 
-router.post("/", auth, roleCheck(["doctor"]), async (req, res) => {
+router.post("/", auth, async (req, res) => {
   // Validate appointment request
   const { error } = createAppointmentRequestValidation(req.body);
   if (error) {
