@@ -59,7 +59,7 @@ const create = (dbModel, query, model, res, role, user) => {
 
           // Add role to User Model
           log("user: %O", user);
-          UserModel.findById(user._id).then(async (usr) => {
+          await UserModel.findById(user._id).then(async (usr) => {
             log(`Adding ${role} to usr: ${usr}`);
             await usr.updateOne(
               { roles: [...usr.roles, role] },
