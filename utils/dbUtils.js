@@ -53,19 +53,21 @@ const create = (dbModel, query, model, res, role, user) => {
           log(`${dbModel.modelName} created successfully`);
 
           // Should role be added to user?
-          if (!role || user.roles.includes(role)) {
+          if (!role) {
             return res.status(StatusCodes.CREATED).json(doc);
           }
 
           // Add role to User Model
           log("user: %O", user);
           await UserModel.findById(user._id).then(async (usr) => {
-            log(`Adding ${role} to usr: ${usr}`);
-            await usr.updateOne(
-              { roles: [...usr.roles, role] },
-              { returnDocument: "after" }
-            );
-            log(`updated user's role`);
+            if (!usr.roles.includes(role)) {
+              log(`Adding role ${role} to usr: ${usr}`);
+              await usr.updateOne(
+                { roles: [...usr.roles, role] },
+                { returnDocument: "after" }
+              );
+              log(`updated user's role`);
+            }
           });
           return res.status(StatusCodes.CREATED).json(doc);
         })

@@ -48,14 +48,14 @@ router.delete("/", async (req, res) => {
     const userToken = await Token.findOne({ token: req.body.refreshToken });
     if (!userToken) {
       return res
-        .status(StatusCodes.OK)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ error: false, message: "Logged out" });
     }
 
     // If token does exist, delete it, then tell user they're logged out
     await userToken.remove();
     return res
-      .status(StatusCodes.BAD_REQUEST)
+      .status(StatusCodes.OK)
       .json({ error: false, message: "Logged out" });
   } catch (err) {
     console.log(err);

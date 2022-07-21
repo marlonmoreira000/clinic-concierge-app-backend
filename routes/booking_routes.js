@@ -7,16 +7,10 @@ const BookingModel = require("../models/bookingModel");
 const AppointmentModel = require("../models/appointmentModel");
 const PatientModel = require("../models/patientModel");
 const { StatusCodes } = require("http-status-codes");
-const {
-  findAll,
-  findById,
-  create,
-  findByIdAndUpdate,
-  findByIdAndDelete,
-} = require("../utils/dbUtils");
+const { findAll, findById, findByIdAndUpdate } = require("../utils/dbUtils");
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
-router.get("/", (req, res) => {
+router.get("/", auth, (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const patientId = req.query.patientId;
@@ -35,11 +29,11 @@ router.get("/", (req, res) => {
   findAll(BookingModel, query, res);
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", auth, roleCheck["patient"],async (req, res) => {
+router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
   // Validate appointment request
   const { error } = createBookingRequestValidation(req.body);
   if (error) {
@@ -50,6 +44,7 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
   const appointment = await AppointmentModel.findOne({
     _id: req.body.appointment_id,
   });
+  log("Found appointment: %O", appointment);
   if (!appointment) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: true,
@@ -62,6 +57,7 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
     : { user_id: req.user._id };
 
   const patient = await PatientModel.findOne(patientQuery);
+  log("Found patient: %O", patient);
   if (!patient) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: true,
@@ -69,10 +65,6 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
     });
   }
 
-  const query = {
-    appointment_id: appointment,
-    patient_id: patient,
-  };
   const booking = {
     appointment_id: appointment,
     patient_id: patient,
@@ -80,10 +72,11 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
     fee_paid: req.body.fee_paid,
     reason_for_visit: req.body.reason_for_visit,
   };
-  log("booking: %O", booking);
-
-  log(`Creating Booking`);
-  BookingModel.findOne(query)
+  log("Creating booking: %O", booking);
+  BookingModel.findOne({
+    appointment_id: appointment,
+    patient_id: patient,
+  })
     .then((existingDoc) => {
       if (existingDoc) {
         log(`Booking already exist, cannot recreate it`);
@@ -93,34 +86,26 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
         });
       }
 
-      BookingModel.create(booking)
-        .then(async (doc) => {
-          log(`Booking created successfully`);
+      BookingModel.create(booking).then(async (doc) => {
+        log(`Booking created successfully`);
 
-          const apppointmentUpdate = {
-            booked: true,
-            booked_by: patient,
-          };
+        const apppointmentUpdate = {
+          booked: true,
+          booked_by: patient,
+        };
 
-          const appointmentId = appointment.id;
-          log(`Updating appointment with id: ${appointmentId}`);
-          AppointmentModel.findByIdAndUpdate(
-            appointmentId,
-            apppointmentUpdate
-          ).then((appt) => {
-            log(
-              `Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`
-            );
-          });
-          return res.status(StatusCodes.CREATED).json(doc);
-        })
-        .catch((error) => {
-          log(`Failed to create Booking: ${error}`);
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            error: true,
-            message: `Failed to create Booking`,
-          });
+        const appointmentId = appointment.id;
+        log(`Updating appointment with id: ${appointmentId}`);
+        AppointmentModel.findByIdAndUpdate(
+          appointmentId,
+          apppointmentUpdate
+        ).then((appt) => {
+          log(
+            `Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`
+          );
         });
+        return res.status(StatusCodes.CREATED).json(doc);
+      });
     })
     .catch((error) => {
       log(`Failed to create Booking: ${error}`);
@@ -131,11 +116,11 @@ router.post("/", auth, roleCheck["patient"],async (req, res) => {
     });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, (req, res) => {
   findByIdAndUpdate(BookingModel, req.params.id, req.body, res);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", auth, (req, res) => {
   const bookingId = req.params.id;
   log(`Deleting booking with id: ${bookingId}`);
   BookingModel.findById(bookingId, async (err, booking) => {
