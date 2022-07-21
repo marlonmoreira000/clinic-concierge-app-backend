@@ -43,7 +43,7 @@ router.get("/", auth, (req, res) => {
   findAll(AppointmentModel, query, res);
 });
 
-router.get("/:id",auth, roleCheck(["patient"]), (req, res) => {
+router.get("/:id", auth, (req, res) => {
   findById(AppointmentModel, req.params.id, res);
 });
 

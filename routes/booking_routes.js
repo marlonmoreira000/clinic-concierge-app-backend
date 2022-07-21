@@ -16,7 +16,7 @@ const {
 } = require("../utils/dbUtils");
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
-router.get("/", (req, res) => {
+router.get("/", auth, (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const patientId = req.query.patientId;
@@ -35,11 +35,11 @@ router.get("/", (req, res) => {
   findAll(BookingModel, query, res);
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   // Validate appointment request
   const { error } = createBookingRequestValidation(req.body);
   if (error) {
@@ -131,11 +131,11 @@ router.post("/", async (req, res) => {
     });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   findByIdAndUpdate(BookingModel, req.params.id, req.body, res);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", auth, (req, res) => {
   const bookingId = req.params.id;
   log(`Deleting booking with id: ${bookingId}`);
   BookingModel.findById(bookingId, async (err, booking) => {
