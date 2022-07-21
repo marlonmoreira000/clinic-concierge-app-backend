@@ -88,7 +88,8 @@ router.post("/", async (req, res) => {
       if (existingDoc) {
         log(`Booking already exist, cannot recreate it`);
         return res.status(StatusCodes.BAD_REQUEST).json({
-          error: `Booking already exist, cannot recreate it`,
+          error: true,
+          message: `Booking already exist, cannot recreate it`,
         });
       }
 
@@ -116,14 +117,16 @@ router.post("/", async (req, res) => {
         .catch((error) => {
           log(`Failed to create Booking: ${error}`);
           res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            error: `Failed to create Booking`,
+            error: true,
+            message: `Failed to create Booking`,
           });
         });
     })
     .catch((error) => {
       log(`Failed to create Booking: ${error}`);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to create Booking`,
+        error: true,
+        message: `Failed to create Booking`,
       });
     });
 });
@@ -133,33 +136,44 @@ router.put("/:id", async (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  // findById(BookingModel, req.params.id, res)
-  // const booking = await BookingModel.findById(req.params.id);
-  // findByIdAndUpdate(AppointmentModel, booking.appointment_id, updateAppointment);
-  // booking.delete();
-
   const bookingId = req.params.id;
   log(`Deleting booking with id: ${bookingId}`);
   BookingModel.findById(bookingId, async (err, booking) => {
     if (err) {
       log(`Failed to delete Booking with id: ${bookingId}: ${err}`);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to delete Booking with id: ${bookingId}`,
+        error: true,
+        message: `Failed to delete Booking with id: ${bookingId}`,
+      });
+    }
+
+    if (!booking) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        error: true,
+        message: `Failed to delete Booking as booking with id: ${bookingId} does not exist`,
       });
     }
 
     log(`Updating appointment for booking id: ${bookingId}`);
-    const appointment = await AppointmentModel.findByIdAndUpdate( booking.appointment_id, {
-      booked: false,
-      booked_by: null
-    });
+    const appointment = await AppointmentModel.findByIdAndUpdate(
+      booking.appointment_id,
+      {
+        booked: false,
+        booked_by: null,
+      }
+    );
     if (!appointment) {
-      log(`Failed to delete Booking with id: ${bookingId} as cant update appointment`);
+      log(
+        `Failed to delete Booking with id: ${bookingId} as cant update appointment`
+      );
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to delete Booking with id: ${bookingId}`,
+        error: true,
+        message: `Failed to delete Booking with id: ${bookingId}`,
       });
     }
-    log(`Updated appointment for booking id: ${bookingId}, updated appointment: ${appointment}`);
+    log(
+      `Updated appointment for booking id: ${bookingId}, updated appointment: ${appointment}`
+    );
 
     await BookingModel.findByIdAndDelete(bookingId);
     log(`Deleted booking with id: ${bookingId}`);

@@ -7,9 +7,10 @@ const findAll = (dbModel, query, res) => {
   dbModel.find(query, (err, docs) => {
     if (err) {
       log(`Failed to get ${dbModel.modelName}s: ${err}`);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: `Failed to get ${dbModel.modelName}s` });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        error: true,
+        message: `Failed to get ${dbModel.modelName}s`,
+      });
     }
 
     log(`Got ${dbModel.modelName}s: ${docs}`);
@@ -23,7 +24,8 @@ const findById = (dbModel, id, res) => {
     if (err || !doc) {
       log(`${dbModel.modelName} with ${id} does not exist`);
       return res.status(StatusCodes.NOT_FOUND).json({
-        error: `Could not find ${dbModel.modelName} with id: ${id}`,
+        error: true,
+        message: `Failed to get ${dbModel.modelName} with id: ${id}`,
       });
     }
 
@@ -40,7 +42,8 @@ const create = (dbModel, query, model, res, role, user) => {
       if (existingDoc) {
         log(`${dbModel.modelName} already exist, cannot recreate it`);
         return res.status(StatusCodes.BAD_REQUEST).json({
-          error: `${dbModel.modelName} already exist, cannot recreate it`,
+          error: true,
+          message: `${dbModel.modelName} already exist, cannot recreate it`,
         });
       }
 
@@ -69,31 +72,50 @@ const create = (dbModel, query, model, res, role, user) => {
         .catch((error) => {
           log(`Failed to create ${dbModel.modelName}: ${error}`);
           res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            error: `Failed to create ${dbModel.modelName}`,
+            error: true,
+            message: `Failed to create ${dbModel.modelName}`,
           });
         });
     })
     .catch((error) => {
       log(`Failed to create ${dbModel.modelName}: ${error}`);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to create ${dbModel.modelName}`,
+        error: true,
+        message: `Failed to create ${dbModel.modelName}`,
       });
     });
 };
 
 const findByIdAndUpdate = (dbModel, id, update, res) => {
   log(`Updating ${dbModel.modelName} with id: ${id}`);
-  dbModel.findByIdAndUpdate(id, update, (err, doc) => {
-    if (err) {
-      log(`Failed to update ${dbModel.modelName} with id ${id}: ${err}`);
-      return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to update ${dbModel.modelName} with id: ${id}`,
-      });
-    }
+  dbModel.findByIdAndUpdate(
+    id,
+    update,
+    { returnDocument: "after" },
+    (err, doc) => {
+      if (err) {
+        log(`Failed to update ${dbModel.modelName} with id ${id}: ${err}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          error: true,
+          message: `Failed to update ${dbModel.modelName} with id: ${id}`,
+        });
+      }
 
-    log(`Updated ${dbModel.modelName} with id: ${id} updated document: ${doc}`);
-    res.sendStatus(StatusCodes.NO_CONTENT);
-  });
+      log(
+        `Updated ${dbModel.modelName} with id: ${id} updated document: ${doc}`
+      );
+      if (!doc) {
+        log(
+          `Failed to update ${dbModel.modelName}, as ${dbModel.modelName} with id ${id} not found`
+        );
+        return res.status(StatusCodes.NOT_FOUND).json({
+          error: true,
+          message: `Failed to update ${dbModel.modelName} with id: ${id}, ${dbModel.modelName} does not exist.`,
+        });
+      }
+      res.status(StatusCodes.OK).send(doc);
+    }
+  );
 };
 
 const findByIdAndDelete = (dbModel, id, res) => {
@@ -102,7 +124,8 @@ const findByIdAndDelete = (dbModel, id, res) => {
     if (err) {
       log(`Failed to delete ${dbModel.modelName} with id: ${id}: ${err}`);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: `Failed to delete ${dbModel.modelName} with id: ${id}`,
+        error: true,
+        message: `Failed to delete ${dbModel.modelName} with id: ${id}`,
       });
     }
 
