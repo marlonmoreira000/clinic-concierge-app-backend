@@ -10,13 +10,25 @@ const { StatusCodes } = require("http-status-codes");
 const { findAll, findById, findByIdAndUpdate } = require("../utils/dbUtils");
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
-router.get("/", auth, (req, res) => {
+router.get("/", auth, async (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const patientId = req.query.patientId;
   if (patientId) {
     query["patient_id"] = patientId;
   }
+
+  const userId = req.query.userId;
+  if (userId) {
+    const pat = await PatientModel.findOne({ user_id: userId });
+    log(`Patient: ${pat}`);
+    if (pat) {
+      query["patient_id"] = pat._id;
+    } else {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: true, message: 'Patient not found for given userId.' });
+    }
+  }
+
   const attended = req.query.attended;
   if (attended || attended === false) {
     query["attended"] = attended;
