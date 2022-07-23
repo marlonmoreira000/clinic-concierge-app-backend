@@ -581,14 +581,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Create new appointment: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2042-07-28T11:00:00.000+10:00",
         end_time: "2042-07-28T12:00:00.000+10:00",
@@ -610,14 +605,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Failed to Create new appointment invalid request: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2042-07-28T11:00:00.000+10:00",
       });
@@ -627,14 +617,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Failed to Create new appointment invalid start time: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2012-07-28T11:00:00.000+10:00",
         end_time: "2042-07-28T12:00:00.000+10:00",
@@ -645,14 +630,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Failed to Create new appointment invalid end time: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2042-07-28T11:00:00.000+10:00",
         end_time: "2012-07-28T12:00:00.000+10:00",
@@ -663,14 +643,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Failed to Create new appointment end time before start time: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2042-07-28T11:00:00.000+10:00",
         end_time: "2042-07-28T10:00:00.000+10:00",
@@ -703,14 +678,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Failed to Create existing appointment: POST /api/v1/appointments", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/appointments/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         start_time: "2042-07-28T11:00:00.000+10:00",
         end_time: "2042-07-28T12:00:00.000+10:00",
@@ -723,14 +693,9 @@ describe("Appointment Routes Tests", () => {
   });
 
   test("Update appointment: PUT /api/v1/appointments/:id", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .put("/api/v1/appointments/" + appointmentId)
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         booked: true,
       });
@@ -764,14 +729,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create new booking: POST /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         appointment_id: appointmentId,
       });
@@ -855,9 +815,14 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create booking failed invalid role: POST /api/v1/bookings", async () => {
+    const tokenResponse = await request(app).post("/api/v1/login").send({
+      email: "dummy@clinic.concerige.com",
+      password: "Test@1234",
+    });
+
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + accessToken)
+      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
       .send({
         appointment_id: appointmentId,
       });
@@ -879,14 +844,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create booking failed invalid request: POST /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         appointmentId: appointmentId,
       });
@@ -896,14 +856,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create booking failed appointmentId not found: POST /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         appointment_id: "62d96a677031381202d9b3dd",
       });
@@ -915,14 +870,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create booking failed invalid patientId: POST /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         appointment_id: appointmentId,
         patient_id: "62d96a677031381202d9b3dd",
@@ -935,14 +885,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Create existing booking failed: POST /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .post("/api/v1/bookings/")
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         appointment_id: appointmentId,
       });
@@ -952,14 +897,9 @@ describe("Booking Routes Tests", () => {
   });
 
   test("Update booking: PUT /api/v1/bookings", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .put("/api/v1/bookings/" + bookingId)
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         attended: true,
         fee_paid: true,
@@ -1012,11 +952,6 @@ describe("Delete Routes Tests", () => {
   });
 
   test("Delete appointment failed appointment booked: DELETE /api/v1/appointments/:id", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     await AppointmentModel.findByIdAndUpdate(
       appointmentId,
       { booked: true },
@@ -1025,7 +960,7 @@ describe("Delete Routes Tests", () => {
 
     const res = await request(app)
       .delete("/api/v1/appointments/" + appointmentId)
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken);
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(400);
     log("res.body: %O", res.body);
     expect(res.body.error).toBe(true);
@@ -1035,11 +970,6 @@ describe("Delete Routes Tests", () => {
   });
 
   test("Delete appointment: DELETE /api/v1/appointments/:id", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     await AppointmentModel.findByIdAndUpdate(
       appointmentId,
       { booked: false },
@@ -1048,19 +978,14 @@ describe("Delete Routes Tests", () => {
 
     const res = await request(app)
       .delete("/api/v1/appointments/" + appointmentId)
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken);
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(204);
   });
 
   test("Failed to Delete appointment id not found: DELETE /api/v1/appointments/:id", async () => {
-    const tokenResponse = await request(app).post("/api/v1/login").send({
-      email: testEmail,
-      password: "Test@1234",
-    });
-
     const res = await request(app)
       .delete("/api/v1/appointments/" + appointmentId)
-      .set("Authorization", "Bearer " + tokenResponse.body.accessToken);
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(404);
     expect(res.body.error).toBe(true);
     expect(res.body.message).toBe(

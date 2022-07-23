@@ -97,11 +97,11 @@ router.post("/", auth, async (req, res) => {
   create(AppointmentModel, appointment, appointment, res);
 });
 
-router.put("/:id", auth, roleCheck(["doctor"]), (req, res) => {
+router.put("/:id", auth, roleCheck("doctor"), (req, res) => {
   findByIdAndUpdate(AppointmentModel, req.params.id, req.body, res);
 });
 
-router.delete("/:id", auth, roleCheck(["doctor"]), async (req, res) => {
+router.delete("/:id", auth, roleCheck("doctor"), async (req, res) => {
   const appointment = await AppointmentModel.findOne({ _id: req.params.id });
 
   if (!appointment) {

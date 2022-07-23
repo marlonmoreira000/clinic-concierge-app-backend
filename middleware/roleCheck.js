@@ -1,7 +1,6 @@
-const roleCheck = (roles) => {
+const roleCheck = (role) => {
   return (req, res, next) => {
-    roles.push("user");
-    if (req.user.roles.includes(...roles)) {
+    if (req.user.roles.includes(role)) {
       next();
     } else {
       res.status(403).json({ error: true, message: "You are not authorised" });

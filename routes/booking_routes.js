@@ -45,7 +45,7 @@ router.get("/:id", auth, (req, res) => {
   findById(BookingModel, req.params.id, res);
 });
 
-router.post("/", auth, roleCheck(["patient"]), async (req, res) => {
+router.post("/", auth, roleCheck("patient"), async (req, res) => {
   // Validate appointment request
   const { error } = createBookingRequestValidation(req.body);
   if (error) {
