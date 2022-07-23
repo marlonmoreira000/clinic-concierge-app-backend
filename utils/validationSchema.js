@@ -60,9 +60,10 @@ const createPatientBodyValidation = (body) => {
           "Queensland",
           "South Australia",
           "Western Australia",
-          "Perth",
+          "Australian Capital Territory",
           "New South Wales",
-          "Tasmania"
+          "Tasmania",
+          "Northern Territory"
         )
         .label("state"),
       postcode: Joi.number().required().label("postcode"),

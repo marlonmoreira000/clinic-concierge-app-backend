@@ -18,7 +18,7 @@ const patientSchema = new mongoose.Schema(
       street_number: { type: Number, required: true },
       street_name: { type: String, required: true },
       suburb: { type: String, required: true },
-      state: { type: String, enum: ["Victoria", "Queensland", "South Australia", "Western Australia", "Perth", "New South Wales", "Tasmania"], required: true },
+      state: { type: String, enum: ["Victoria", "Queensland", "South Australia", "Western Australia", "Australian Capital Territory", "New South Wales", "Tasmania","Northern Territory"], required: true },
       postcode: {type: Number, required: true}
 
     },
@@ -26,7 +26,7 @@ const patientSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["male", "female", "other", "prefer not to say"],
-      default: "male",
+      default: "prefer not to say",
       required: false,
     },
     // Age not required to allow non-disclosure
