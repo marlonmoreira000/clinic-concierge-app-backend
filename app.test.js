@@ -39,6 +39,8 @@ describe("Auth Routes Tests", () => {
       expect(res.status).toBe(201);
       expect(res.body.error).toBe(false);
       expect(res.body.message).toBe("Account created successfully");
+      expect(res.body.accessToken).toBeDefined();
+      expect(res.body.refreshToken).toBeDefined();
 
       const user = await UserModel.findOne({ email: testEmail });
       userId = user._id;
@@ -754,63 +756,11 @@ describe("Booking Routes Tests", () => {
       .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(200);
     const booking = res.body[0];
-    expect(booking._id).toBe("62d765b0ed2c4ee6dd3d2662");
-    expect(booking.appointment_id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(booking.patient_id).toBe("62d3b883b692f8d83e6da35f");
-    expect(booking.attended).toBe(false);
-    expect(booking.fee_paid).toBe(false);
-  });
-
-  test("Get all bookings by patientId: GET /api/v1/bookings", async () => {
-    const res = await request(app)
-      .get("/api/v1/bookings?patientId=62d3b883b692f8d83e6da35f")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const booking = res.body[0];
-    expect(booking._id).toBe("62d765b0ed2c4ee6dd3d2662");
-    expect(booking.appointment_id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(booking.patient_id).toBe("62d3b883b692f8d83e6da35f");
-    expect(booking.attended).toBe(false);
-    expect(booking.fee_paid).toBe(false);
-  });
-
-  test("Get all bookings by attended: GET /api/v1/bookings", async () => {
-    const res = await request(app)
-      .get("/api/v1/bookings?attended=false")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const booking = res.body[0];
-    expect(booking._id).toBe("62d765b0ed2c4ee6dd3d2662");
-    expect(booking.appointment_id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(booking.patient_id).toBe("62d3b883b692f8d83e6da35f");
-    expect(booking.attended).toBe(false);
-    expect(booking.fee_paid).toBe(false);
-  });
-
-  test("Get all bookings by fee paid: GET /api/v1/bookings", async () => {
-    const res = await request(app)
-      .get("/api/v1/bookings?feePaid=false")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const booking = res.body[0];
-    expect(booking._id).toBe("62d765b0ed2c4ee6dd3d2662");
-    expect(booking.appointment_id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(booking.patient_id).toBe("62d3b883b692f8d83e6da35f");
-    expect(booking.attended).toBe(false);
-    expect(booking.fee_paid).toBe(false);
-  });
-
-  test("Get all booking by id: GET /api/v1/bookings/:id", async () => {
-    const res = await request(app)
-      .get("/api/v1/bookings/62d765b0ed2c4ee6dd3d2662")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const booking = res.body;
-    expect(booking._id).toBe("62d765b0ed2c4ee6dd3d2662");
-    expect(booking.appointment_id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(booking.patient_id).toBe("62d3b883b692f8d83e6da35f");
-    expect(booking.attended).toBe(false);
-    expect(booking.fee_paid).toBe(false);
+    expect(booking._id).toBeDefined();
+    expect(booking.appointment_id).toBeDefined();
+    expect(booking.patient_id).toBeDefined();
+    expect(booking.attended).toBeDefined();
+    expect(booking.fee_paid).toBeDefined();
   });
 
   test("Create new booking: POST /api/v1/bookings", async () => {
@@ -837,6 +787,71 @@ describe("Booking Routes Tests", () => {
 
     const appointment = await AppointmentModel.findById(appointmentId);
     expect(appointment.booked).toBe(true);
+  });
+
+  test("Get all bookings by patientId: GET /api/v1/bookings", async () => {
+    const res = await request(app)
+      .get("/api/v1/bookings?patientId=" + patientId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const booking = res.body[0];
+    expect(booking._id).toBe(bookingId);
+    expect(booking.appointment_id).toBe(appointmentId);
+    expect(booking.patient_id).toBe(patientId);
+    expect(booking.attended).toBe(false);
+    expect(booking.fee_paid).toBe(false);
+  });
+
+  test("Get all bookings by userId: GET /api/v1/bookings", async () => {
+    const res = await request(app)
+      .get("/api/v1/bookings?userId=" + userId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const booking = res.body[0];
+    expect(booking._id).toBe(bookingId);
+    expect(booking.appointment_id).toBe(appointmentId);
+    expect(booking.patient_id).toBe(patientId);
+    expect(booking.attended).toBe(false);
+    expect(booking.fee_paid).toBe(false);
+  });
+
+  test("Get all bookings by attended: GET /api/v1/bookings", async () => {
+    const res = await request(app)
+      .get("/api/v1/bookings?attended=false")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const booking = res.body[0];
+    expect(booking._id).toBeDefined();
+    expect(booking.appointment_id).toBeDefined();
+    expect(booking.patient_id).toBeDefined();
+    expect(booking.attended).toBeDefined();
+    expect(booking.fee_paid).toBeDefined();
+  });
+
+  test("Get all bookings by fee paid: GET /api/v1/bookings", async () => {
+    const res = await request(app)
+      .get("/api/v1/bookings?feePaid=false")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const booking = res.body[0];
+    expect(booking._id).toBeDefined();
+    expect(booking.appointment_id).toBeDefined();
+    expect(booking.patient_id).toBeDefined();
+    expect(booking.attended).toBeDefined();
+    expect(booking.fee_paid).toBeDefined();
+  });
+
+  test("Get all booking by id: GET /api/v1/bookings/:id", async () => {
+    const res = await request(app)
+      .get("/api/v1/bookings/" + bookingId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const booking = res.body;
+    expect(booking._id).toBe(bookingId);
+    expect(booking.appointment_id).toBe(appointmentId);
+    expect(booking.patient_id).toBe(patientId);
+    expect(booking.attended).toBe(false);
+    expect(booking.fee_paid).toBe(false);
   });
 
   test("Create booking failed invalid role: POST /api/v1/bookings", async () => {

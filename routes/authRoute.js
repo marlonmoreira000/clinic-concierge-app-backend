@@ -21,14 +21,12 @@ router.post("/register", async (req, res) => {
     }
 
     // Check if user already exists for this email address
-    const user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email });
     if (user) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({
-          error: true,
-          message: "Account already exists for this email",
-        });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: true,
+        message: "Account already exists for this email",
+      });
     }
 
     // Encrypt, salt and hash password - IMPORTANT
@@ -36,10 +34,16 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     // Save User to DB, replacing supplied password with hashed+salted password
-    await new User({ ...req.body, password: hashedPassword }).save();
-    res
-      .status(StatusCodes.CREATED)
-      .json({ error: false, message: "Account created successfully" });
+    user = await new User({ ...req.body, password: hashedPassword }).save();
+
+    // Generate access and refresh token for newly create user
+    const { accessToken, refreshToken } = await generateToken(user);
+    res.status(StatusCodes.CREATED).json({
+      error: false,
+      accessToken,
+      refreshToken,
+      message: "Account created successfully",
+    });
   } catch (err) {
     console.log(err);
     res
@@ -80,14 +84,12 @@ router.post("/login", async (req, res) => {
 
     // Generate access and refresh token if email + password correct
     const { accessToken, refreshToken } = await generateToken(user);
-    res
-      .status(StatusCodes.OK)
-      .json({
-        error: false,
-        accessToken,
-        refreshToken,
-        message: "Login successful",
-      });
+    res.status(StatusCodes.OK).json({
+      error: false,
+      accessToken,
+      refreshToken,
+      message: "Login successful",
+    });
   } catch (err) {
     console.log(err);
     res
