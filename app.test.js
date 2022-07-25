@@ -546,6 +546,24 @@ describe("Appointment Routes Tests", () => {
     expect(appointment).toBeDefined();
   });
 
+  test("Get all appointments by userId: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?userId=62cfb8a8776e94160cfee75b")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body[0];
+    expect(appointment).toBeDefined();
+  });
+
+  test("Failed to get all appointments by userId, userId invalid: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?userId=62cfb8a8776e94160cfee75c")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe("Doctor not found for given userId.");
+  });
+
   test("Failed to Get all appointments without token: GET /api/v1/appointments", async () => {
     const res = await request(app).get("/api/v1/appointments");
     expect(res.status).toBe(401);

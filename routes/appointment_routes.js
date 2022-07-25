@@ -16,7 +16,7 @@ const {
   createAppointmentRequestValidation,
 } = require("../utils/validationSchema");
 
-router.get("/", auth, (req, res) => {
+router.get("/", auth, async (req, res) => {
   log("query parameters: %O", req.query);
   const query = {};
   const fromTime = req.query.fromTime;
@@ -39,6 +39,19 @@ router.get("/", auth, (req, res) => {
   if (doctorId) {
     query["doctor_id"] = doctorId;
   }
+  const userId = req.query.userId;
+  if (userId) {
+    const doc = await DoctorModel.findOne({ user_id: userId });
+    log(`Doctor: ${doc}`);
+    if (doc) {
+      query["doctor_id"] = doc._id;
+    } else {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: true, message: "Doctor not found for given userId." });
+    }
+  }
+
   log("query: %O", query);
   findAll(AppointmentModel, query, res);
 });
