@@ -224,30 +224,11 @@ describe("Doctor Routes Tests", () => {
     const res = await request(app).get("/api/v1/doctors");
     expect(res.status).toBe(200);
     const doctor = res.body[0];
-    expect(doctor._id).toBe("62d0b723973a6ab7e30b3bc8");
-    expect(doctor.first_name).toBe("doctor1");
-    expect(doctor.last_name).toBe("doctor");
-    expect(doctor.gender).toBe("male");
-    expect(doctor.experience).toBe(15);
-    expect(doctor.speciality).toBe("diabetology");
-    expect(doctor.bio).toBeDefined();
-    expect(doctor.user_id).toBe("62cfb8a8776e94160cfee75b");
-  });
-
-  test("Get doctor by ID: GET /api/v1/doctors/:id", async () => {
-    const res = await request(app).get(
-      "/api/v1/doctors/62d0b723973a6ab7e30b3bc8"
-    );
-    expect(res.status).toBe(200);
-    const doctor = res.body;
-    expect(doctor._id).toBe("62d0b723973a6ab7e30b3bc8");
-    expect(doctor.first_name).toBe("doctor1");
-    expect(doctor.last_name).toBe("doctor");
-    expect(doctor.gender).toBe("male");
-    expect(doctor.experience).toBe(15);
-    expect(doctor.speciality).toBe("diabetology");
-    expect(doctor.bio).toBeDefined();
-    expect(doctor.user_id).toBe("62cfb8a8776e94160cfee75b");
+    expect(doctor._id).toBeDefined();
+    expect(doctor.first_name).toBeDefined();
+    expect(doctor.last_name).toBeDefined();
+    expect(doctor.gender).toBeDefined();
+    expect(doctor.user_id).toBeDefined();
   });
 
   test("Create new doctor: POST /api/v1/doctors", async () => {
@@ -278,6 +259,20 @@ describe("Doctor Routes Tests", () => {
     const user = await UserModel.findById(userId);
     expect(user.roles[0]).toEqual("user");
     expect(user.roles[1]).toEqual("doctor");
+  });
+
+  test("Get doctor by ID: GET /api/v1/doctors/:id", async () => {
+    const res = await request(app).get("/api/v1/doctors/" + doctorId);
+    expect(res.status).toBe(200);
+    const doctor = res.body;
+    expect(doctor._id).toBe(doctorId);
+    expect(doctor.first_name).toBe("test_doc_fn");
+    expect(doctor.last_name).toBe("test_doc_ln");
+    expect(doctor.gender).toBe("male");
+    expect(doctor.experience).toBe(5);
+    expect(doctor.speciality).toBe("Orthopaedics");
+    expect(doctor.bio).toBe("something something something more");
+    expect(doctor.appointments).toEqual([]);
   });
 
   test("Should fail to create doctor when bad request", async () => {
@@ -489,66 +484,16 @@ describe("Appointment Routes Tests", () => {
       .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(200);
     const appointment = res.body[0];
-    expect(appointment._id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(appointment.doctor_id).toBe("62d3b3e99c3bf66e4319adc1");
-    expect(appointment.booked).toBe(true);
-    expect(appointment.booked_by).toBe("62d3b883b692f8d83e6da35f");
-    expect(appointment.appointment_slot.start_time).toBe(
-      "2022-07-30T06:30:00.000Z"
-    );
-    expect(appointment.appointment_slot.end_time).toBe(
-      "2022-07-30T07:30:00.000Z"
-    );
-  });
-
-  test("Get all appointments by fromTime: GET /api/v1/appointments", async () => {
-    const res = await request(app)
-      .get("/api/v1/appointments?fromTime=2022-07-17T00:00:00.000Z")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const appointment = res.body[0];
-    expect(appointment._id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(appointment.doctor_id).toBe("62d3b3e99c3bf66e4319adc1");
-    expect(appointment.booked).toBe(true);
-    expect(appointment.booked_by).toBe("62d3b883b692f8d83e6da35f");
-    expect(appointment.appointment_slot.start_time).toBe(
-      "2022-07-30T06:30:00.000Z"
-    );
-    expect(appointment.appointment_slot.end_time).toBe(
-      "2022-07-30T07:30:00.000Z"
-    );
-  });
-
-  test("Get all appointments by toTime: GET /api/v1/appointments", async () => {
-    const res = await request(app)
-      .get("/api/v1/appointments?toTime=2022-07-25T00:00:00.000Z")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const appointment = res.body[0];
-    expect(appointment).toBeDefined();
+    expect(appointment._id).toBeDefined();
+    expect(appointment.doctor_id).toBeDefined();
+    expect(appointment.booked).toBeDefined();
+    expect(appointment.appointment_slot.start_time).toBeDefined();
+    expect(appointment.appointment_slot.end_time).toBeDefined();
   });
 
   test("Get all appointments by booked: GET /api/v1/appointments", async () => {
     const res = await request(app)
       .get("/api/v1/appointments?booked=true")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const appointment = res.body[0];
-    expect(appointment).toBeDefined();
-  });
-
-  test("Get all appointments by doctorId: GET /api/v1/appointments", async () => {
-    const res = await request(app)
-      .get("/api/v1/appointments?doctorId=62d0b723973a6ab7e30b3bc8")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const appointment = res.body[0];
-    expect(appointment).toBeDefined();
-  });
-
-  test("Get all appointments by userId: GET /api/v1/appointments", async () => {
-    const res = await request(app)
-      .get("/api/v1/appointments?userId=62cfb8a8776e94160cfee75b")
       .set("Authorization", "Bearer " + accessToken);
     expect(res.status).toBe(200);
     const appointment = res.body[0];
@@ -566,33 +511,6 @@ describe("Appointment Routes Tests", () => {
 
   test("Failed to Get all appointments without token: GET /api/v1/appointments", async () => {
     const res = await request(app).get("/api/v1/appointments");
-    expect(res.status).toBe(401);
-    expect(res.body.error).toBe(true);
-    expect(res.body.message).toBe("Access denied: No token provided.");
-  });
-
-  test("Get all appointment by id: GET /api/v1/appointments", async () => {
-    const res = await request(app)
-      .get("/api/v1/appointments/62d0fc7e4a0130949b8eb5e7")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    const appointment = res.body;
-    expect(appointment._id).toBe("62d0fc7e4a0130949b8eb5e7");
-    expect(appointment.doctor_id).toBe("62d3b3e99c3bf66e4319adc1");
-    expect(appointment.booked).toBe(true);
-    expect(appointment.booked_by).toBe("62d3b883b692f8d83e6da35f");
-    expect(appointment.appointment_slot.start_time).toBe(
-      "2022-07-30T06:30:00.000Z"
-    );
-    expect(appointment.appointment_slot.end_time).toBe(
-      "2022-07-30T07:30:00.000Z"
-    );
-  });
-
-  test("Failed to Get all appointment with ID without token: GET /api/v1/appointments/:id", async () => {
-    const res = await request(app).get(
-      "/api/v1/appointments/62d037df1ceb4dda0110949c"
-    );
     expect(res.status).toBe(401);
     expect(res.body.error).toBe(true);
     expect(res.body.message).toBe("Access denied: No token provided.");
@@ -620,6 +538,67 @@ describe("Appointment Routes Tests", () => {
     expect(appointment.appointment_slot.end_time).toBe(
       "2042-07-28T02:00:00.000Z"
     );
+  });
+
+  test("Get all appointments by doctorId: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?doctorId=" + doctorId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body[0];
+    expect(appointment).toBeDefined();
+  });
+
+  test("Get all appointments by userId: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?userId=" + userId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body[0];
+    expect(appointment).toBeDefined();
+  });
+
+  test("Get all appointments by fromTime: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?fromTime=2042-07-28T01:00:00.000Z")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body[0];
+    expect(appointment).toBeDefined();
+  });
+
+  test("Get all appointments by toTime: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments?toTime=2042-07-28T02:00:00.000Z")
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body[0];
+    expect(appointment).toBeDefined();
+  });
+
+  test("Get all appointment by id: GET /api/v1/appointments", async () => {
+    const res = await request(app)
+      .get("/api/v1/appointments/" + appointmentId)
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res.status).toBe(200);
+    const appointment = res.body;
+    expect(appointment._id).toBe(appointmentId);
+    expect(appointment.doctor_id).toBe(doctorId);
+    expect(appointment.booked).toBe(false);
+    expect(appointment.booked_by).toBeUndefined();
+    expect(appointment.appointment_slot.start_time).toBe(
+      "2042-07-28T01:00:00.000Z"
+    );
+    expect(appointment.appointment_slot.end_time).toBe(
+      "2042-07-28T02:00:00.000Z"
+    );
+  });
+
+  test("Failed to Get all appointment with ID without token: GET /api/v1/appointments/:id", async () => {
+    const res = await request(app).get("/api/v1/appointments/" + appointmentId);
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe("Access denied: No token provided.");
   });
 
   test("Failed to Create new appointment invalid request: POST /api/v1/appointments", async () => {

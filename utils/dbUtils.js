@@ -2,20 +2,24 @@ const { StatusCodes } = require("http-status-codes");
 const { log } = require("console");
 const UserModel = require("../models/userModel");
 
-const findAll = (dbModel, query, res) => {
+const findAll = (dbModel, query, res, sortBy = {}) => {
   log(`Getting ${dbModel.modelName}s`);
-  dbModel.find(query, (err, docs) => {
-    if (err) {
-      log(`Failed to get ${dbModel.modelName}s: ${err}`);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error: true,
-        message: `Failed to get ${dbModel.modelName}s`,
-      });
-    }
+  
+  dbModel
+    .find(query)
+    .sort(sortBy)
+    .exec((err, docs) => {
+      if (err) {
+        log(`Failed to get ${dbModel.modelName}s: ${err}`);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          error: true,
+          message: `Failed to get ${dbModel.modelName}s`,
+        });
+      }
 
-    log(`Got ${dbModel.modelName}s: ${docs}`);
-    res.status(StatusCodes.OK).json(docs);
-  });
+      log(`Got ${dbModel.modelName}s: ${docs}`);
+      res.status(StatusCodes.OK).json(docs);
+    });
 };
 
 const findById = (dbModel, id, res) => {

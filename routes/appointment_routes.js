@@ -52,8 +52,13 @@ router.get("/", auth, async (req, res) => {
     }
   }
 
+  const sortBy = {
+    doctor_id: 1,
+    "appointment_slot.start_time": 1,
+  };
+
   log("query: %O", query);
-  findAll(AppointmentModel, query, res);
+  findAll(AppointmentModel, query, res, sortBy);
 });
 
 router.get("/:id", auth, (req, res) => {
