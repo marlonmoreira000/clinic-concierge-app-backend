@@ -37,8 +37,13 @@ router.get("/", auth, async (req, res) => {
   if (feePaid || feePaid === false) {
     query["fee_paid"] = feePaid;
   }
+  const sortBy = {
+    patient_id: 1,
+    appointment_id: 1,
+  };
+
   log("query: %O", query);
-  findAll(BookingModel, query, res);
+  findAll(BookingModel, query, res, sortBy);
 });
 
 router.get("/:id", auth, (req, res) => {
