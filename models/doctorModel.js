@@ -2,10 +2,12 @@ const mongoose = require("./connection");
 
 const doctorSchema = new mongoose.Schema(
   {
+    // First name of the doctor
     first_name: {
       type: String,
       required: true,
     },
+    // Last name of the doctor
     last_name: {
       type: String,
       required: true,
@@ -32,10 +34,12 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    // User Id associated with this doctor profile
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
+    // List of appointments for this doctor profile
     appointments: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "appointments",

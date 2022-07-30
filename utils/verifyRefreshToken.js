@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Token = require("../models/tokenModel");
 
+// Verify if the refresh token request is valid
 const verifyRefreshToken = (refreshToken) => {
     const privateKey = process.env.REFRESH_TOKEN_PRIVATE_KEY;
 
