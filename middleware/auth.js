@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { log } = require("console");
 const { StatusCodes } = require("http-status-codes");
 const UserModel = require("../models/userModel");
 dotenv.config();
@@ -27,8 +26,6 @@ const auth = async (req, res, next) => {
             message: "Access denied: Invalid or expired token.",
           });
         }
-
-        log(`User Roles for id:${user._id} : ${user.roles}`);
         req.user = user;
         next();
       }

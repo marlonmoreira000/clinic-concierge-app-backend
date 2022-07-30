@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { log } = require("console");
 const auth = require("../middleware/auth.js");
 const { roleCheck } = require("../middleware/roleCheck.js");
 const BookingModel = require("../models/bookingModel");
@@ -11,7 +10,6 @@ const { findAll, findById, findByIdAndUpdate } = require("../utils/dbUtils");
 const { createBookingRequestValidation } = require("../utils/validationSchema");
 
 router.get("/", auth, async (req, res) => {
-  log("query parameters: %O", req.query);
   const query = {};
   const patientId = req.query.patientId;
   if (patientId) {
@@ -21,7 +19,6 @@ router.get("/", auth, async (req, res) => {
   const userId = req.query.userId;
   if (userId) {
     const pat = await PatientModel.findOne({ user_id: userId });
-    log(`Patient: ${pat}`);
     if (pat) {
       query["patient_id"] = pat._id;
     } else {
@@ -42,7 +39,6 @@ router.get("/", auth, async (req, res) => {
     appointment_id: 1,
   };
 
-  log("query: %O", query);
   findAll(BookingModel, query, res, sortBy);
 });
 
@@ -61,7 +57,6 @@ router.post("/", auth, roleCheck("patient"), async (req, res) => {
   const appointment = await AppointmentModel.findOne({
     _id: req.body.appointment_id,
   });
-  log("Found appointment: %O", appointment);
   if (!appointment) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: true,
@@ -74,7 +69,6 @@ router.post("/", auth, roleCheck("patient"), async (req, res) => {
     : { user_id: req.user._id };
 
   const patient = await PatientModel.findOne(patientQuery);
-  log("Found patient: %O", patient);
   if (!patient) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: true,
@@ -89,14 +83,12 @@ router.post("/", auth, roleCheck("patient"), async (req, res) => {
     fee_paid: req.body.fee_paid,
     reason_for_visit: req.body.reason_for_visit,
   };
-  log("Creating booking: %O", booking);
   BookingModel.findOne({
     appointment_id: appointment,
     patient_id: patient,
   })
     .then((existingDoc) => {
       if (existingDoc) {
-        log(`Booking already exist, cannot recreate it`);
         return res.status(StatusCodes.BAD_REQUEST).json({
           error: true,
           message: `Booking already exist, cannot recreate it`,
@@ -104,7 +96,6 @@ router.post("/", auth, roleCheck("patient"), async (req, res) => {
       }
 
       BookingModel.create(booking).then(async (doc) => {
-        log(`Booking created successfully`);
 
         const apppointmentUpdate = {
           booked: true,
@@ -112,20 +103,15 @@ router.post("/", auth, roleCheck("patient"), async (req, res) => {
         };
 
         const appointmentId = appointment.id;
-        log(`Updating appointment with id: ${appointmentId}`);
         AppointmentModel.findByIdAndUpdate(
           appointmentId,
           apppointmentUpdate
         ).then((appt) => {
-          log(
-            `Appointment with id: ${appointmentId} updated successfully, updated appointment details: ${appt}`
-          );
           return res.status(StatusCodes.CREATED).json(doc);
         });
       });
     })
     .catch((error) => {
-      log(`Failed to create Booking: ${error}`);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: true,
         message: `Failed to create Booking`,
@@ -139,10 +125,8 @@ router.put("/:id", auth, (req, res) => {
 
 router.delete("/:id", auth, (req, res) => {
   const bookingId = req.params.id;
-  log(`Deleting booking with id: ${bookingId}`);
   BookingModel.findById(bookingId, async (err, booking) => {
     if (err) {
-      log(`Failed to delete Booking with id: ${bookingId}: ${err}`);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: true,
         message: `Failed to delete Booking with id: ${bookingId}`,
@@ -155,8 +139,6 @@ router.delete("/:id", auth, (req, res) => {
         message: `Failed to delete Booking as booking with id: ${bookingId} does not exist`,
       });
     }
-
-    log(`Updating appointment for booking id: ${bookingId}`);
     const appointment = await AppointmentModel.findByIdAndUpdate(
       booking.appointment_id,
       {
@@ -165,20 +147,15 @@ router.delete("/:id", auth, (req, res) => {
       }
     );
     if (!appointment) {
-      log(
-        `Failed to delete Booking with id: ${bookingId} as cant update appointment`
-      );
+      
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         error: true,
         message: `Failed to delete Booking with id: ${bookingId}`,
       });
     }
-    log(
-      `Updated appointment for booking id: ${bookingId}, updated appointment: ${appointment}`
-    );
+   
 
     await BookingModel.findByIdAndDelete(bookingId);
-    log(`Deleted booking with id: ${bookingId}`);
     res.sendStatus(StatusCodes.NO_CONTENT);
   });
 });

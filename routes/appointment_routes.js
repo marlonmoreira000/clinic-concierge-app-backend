@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { log } = require("console");
 const auth = require("../middleware/auth.js");
 const { roleCheck } = require("../middleware/roleCheck.js");
 const AppointmentModel = require("../models/appointmentModel");
@@ -17,7 +16,6 @@ const {
 } = require("../utils/validationSchema");
 
 router.get("/", auth, async (req, res) => {
-  log("query parameters: %O", req.query);
   const query = {};
   const fromTime = req.query.fromTime;
   if (fromTime) {
@@ -42,7 +40,6 @@ router.get("/", auth, async (req, res) => {
   const userId = req.query.userId;
   if (userId) {
     const doc = await DoctorModel.findOne({ user_id: userId });
-    log(`Doctor: ${doc}`);
     if (doc) {
       query["doctor_id"] = doc._id;
     } else {
@@ -56,8 +53,6 @@ router.get("/", auth, async (req, res) => {
     doctor_id: 1,
     "appointment_slot.start_time": 1,
   };
-
-  log("query: %O", query);
   findAll(AppointmentModel, query, res, sortBy);
 });
 
@@ -93,8 +88,6 @@ router.post("/", auth, async (req, res) => {
       message: `Appointment start time should be earlier than end time and start and end time cannot be equal.`,
     });
   }
-  //TODO: check appointment start_time not before other appointment end_time
-  //TODO: check appointment end_time not after other appointment start_time
 
   const doctor = await DoctorModel.findOne({ user_id: req.user._id });
   if (!doctor) {
@@ -111,7 +104,6 @@ router.post("/", auth, async (req, res) => {
       end_time: new Date(req.body.end_time),
     },
   };
-  log("appointment: %O", appointment);
   create(AppointmentModel, appointment, appointment, res);
 });
 
