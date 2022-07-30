@@ -174,51 +174,6 @@ describe("Auth Routes Tests", () => {
   });
 });
 
-describe("User Routes Tests", () => {
-  describe("Success Scenarios", () => {
-    test("Get all users: GET /api/v1/users", async () => {
-      const res = await request(app)
-        .get("/api/v1/users")
-        .set("Authorization", "Bearer " + accessToken);
-      expect(res.status).toBe(200);
-      const user = res.body[0];
-      expect(user._id).toBe("62cfb8a8776e94160cfee75b");
-      expect(user.email).toBe("test_user1@test.com");
-      expect(user.password).toBe(
-        "$2b$12$YAldOssSHn44F.4SkKNx1ufckRZKTBgZ2PdDhetHs3TL6jYycaR7C"
-      );
-      expect(user.roles[0]).toBe("user");
-    });
-
-    test("Get user by ID: GET /api/v1/users/:id", async () => {
-      const res = await request(app)
-        .get("/api/v1/users/" + userId)
-        .set("Authorization", "Bearer " + accessToken);
-      expect(res.status).toBe(200);
-      const user = res.body;
-      expect(user.email).toBe("jest_test_user@test.com");
-      expect(user.password).toBeDefined();
-      expect(user.roles[0]).toBe("user");
-    });
-  });
-
-  describe("Failure Scenarios", () => {
-    test("Should fail to get users without access token", async () => {
-      const res = await request(app).get("/api/v1/users/");
-      expect(res.status).toBe(401);
-      expect(res.body.error).toBe(true);
-      expect(res.body.message).toBe("Access denied: No token provided.");
-    });
-
-    test("Should fail to get user without access token", async () => {
-      const res = await request(app).get("/api/v1/users/" + userId);
-      expect(res.status).toBe(401);
-      expect(res.body.error).toBe(true);
-      expect(res.body.message).toBe("Access denied: No token provided.");
-    });
-  });
-});
-
 describe("Doctor Routes Tests", () => {
   test("Get all doctors: GET /api/v1/doctors", async () => {
     const res = await request(app).get("/api/v1/doctors");
@@ -322,6 +277,51 @@ describe("Doctor Routes Tests", () => {
     expect(doctor.speciality).toBe("Orthopaedics");
     expect(doctor.bio).toBe("something something something more");
     expect(doctor.appointments).toEqual([]);
+  });
+});
+
+describe("User Routes Tests", () => {
+  describe("Success Scenarios", () => {
+    test("Get all users: GET /api/v1/users", async () => {
+      const res = await request(app)
+        .get("/api/v1/users")
+        .set("Authorization", "Bearer " + accessToken);
+      expect(res.status).toBe(200);
+      const user = res.body[0];
+      expect(user._id).toBe("62cfb8a8776e94160cfee75b");
+      expect(user.email).toBe("test_user1@test.com");
+      expect(user.password).toBe(
+        "$2b$12$YAldOssSHn44F.4SkKNx1ufckRZKTBgZ2PdDhetHs3TL6jYycaR7C"
+      );
+      expect(user.roles[0]).toBe("user");
+    });
+
+    test("Get user by ID: GET /api/v1/users/:id", async () => {
+      const res = await request(app)
+        .get("/api/v1/users/" + userId)
+        .set("Authorization", "Bearer " + accessToken);
+      expect(res.status).toBe(200);
+      const user = res.body;
+      expect(user.email).toBe("jest_test_user@test.com");
+      expect(user.password).toBeDefined();
+      expect(user.roles[0]).toBe("user");
+    });
+  });
+
+  describe("Failure Scenarios", () => {
+    test("Should fail to get users without access token", async () => {
+      const res = await request(app).get("/api/v1/users/");
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe(true);
+      expect(res.body.message).toBe("Access denied: No token provided.");
+    });
+
+    test("Should fail to get user without access token", async () => {
+      const res = await request(app).get("/api/v1/users/" + userId);
+      expect(res.status).toBe(401);
+      expect(res.body.error).toBe(true);
+      expect(res.body.message).toBe("Access denied: No token provided.");
+    });
   });
 });
 

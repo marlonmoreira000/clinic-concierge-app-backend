@@ -6,11 +6,11 @@ const { findAll, findById } = require("../utils/dbUtils");
 const { roleCheck } = require("../middleware/roleCheck.js");
 
 
-router.get("/", auth,roleCheck("doctor"), (req, res) => {
+router.get("/", auth, roleCheck("doctor"), (req, res) => {
   findAll(UserModel, {}, res);
 });
 
-router.get("/:id", auth,roleCheck("doctor"), (req, res) => {
+router.get("/:id", auth, roleCheck("doctor"), (req, res) => {
   findById(UserModel, req.params.id, res);
 });
 
