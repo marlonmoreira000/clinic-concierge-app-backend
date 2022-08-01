@@ -2,6 +2,10 @@
 
 ---
 
+![main img](./docs/main.png)
+
+---
+
 ## Links
 
 - [Demo video](https://www.linkedin.com/posts/marlonmoreira_an-appointment-booking-app-we-made-at-coder-activity-6957556451548487680-5MdM?utm_source=linkedin_share&utm_medium=member_desktop_web)
@@ -43,8 +47,6 @@ The app is intended for medical practices, as a simple way to to deliver online 
 
 ## Tech Stack
 
-Our app is built on the following technologies:
-
 ### Front End
 - CSS
 - HTML
@@ -79,7 +81,7 @@ Our app is built on the following technologies:
 - [Vite](https://vitejs.dev/): for scaffolding/app creation.
 
 ### Front-End Testing
-Following libraries are used:
+
 - [Vitest](https://vitest.dev/): was used testing framework.
 - [React Testing Library](https://testing-library.com/): for UI component testing.
 - [JSDOM](https://github.com/jsdom/jsdom): for emulating web browsers during unit and integration testing.
@@ -98,7 +100,7 @@ Following libraries are used:
 - [Mongoose](https://mongoosejs.com/): as object modeling tool which works with MongoDB.
 
 ### Back-End Testing
-Following libraries are used:
+
 - [Jest](https://jestjs.io/): as the testing framework for unit and integration tests.
 - [Supertest](https://github.com/visionmedia/supertest#readme): for HTTP assertions for API request.
 - [Nodemon](https://nodemon.io/): for monitoring the changes in project and re-running or re-deploying the application in local.
