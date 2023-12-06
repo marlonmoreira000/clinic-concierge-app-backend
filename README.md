@@ -10,8 +10,6 @@
 
 - [Demo video](https://www.linkedin.com/posts/marlonmoreira_an-appointment-booking-app-we-made-at-coder-activity-6957556451548487680-5MdM?utm_source=linkedin_share&utm_medium=member_desktop_web)
 
-- [Deployed app](https://clinic-concierge.netlify.app/)
-
 - [Frontend source code](https://github.com/marlonmoreira000/clinic-concierge-app-frontend)
 
 - [Backend source code](https://github.com/marlonmoreira000/clinic-concierge-app-backend)
